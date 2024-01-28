@@ -12,14 +12,15 @@ if __name__ == '__main__':
     FPS = 60
     clock = pygame.time.Clock()
 
+
     def draw_bg():
-        fon = pygame.image.load('data/bg.jpg').convert_alpha()
+        fon = pygame.image.load('data/img.png')
         fon = pygame.transform.scale(fon, (1000, 600))
         screen.blit(fon, (0, 0))
 
 
-    fighter_1 = Fighter(200, 420, 1)
-    fighter_2 = Fighter(700, 420, 2)
+    fighter_1 = Fighter(200, 420, 1, 'data/idle.png')
+    fighter_2 = Fighter(700, 420, 2, 'data/idle.png')
 
     def healthbar(pos_x, pos_y, health):
         healthbar_rect = pygame.Rect((pos_x, pos_y, 400 * (health / 100), 30))
@@ -40,8 +41,8 @@ if __name__ == '__main__':
         fighter_1.move(screen, fighter_2)
         fighter_2.move(screen, fighter_1)
 
-        fighter_1.draw(screen)
-        fighter_2.draw(screen)
+        fighter_1.animation(screen)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
