@@ -30,7 +30,8 @@ class Button:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.is_hover:
-            pass
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, button=self))
+
 
 
 
