@@ -1,5 +1,8 @@
 import pygame
 from fighter import Fighter
+import sys
+from button import Button
+
 
 if __name__ == '__main__':
 
@@ -12,6 +15,8 @@ if __name__ == '__main__':
     FPS = 60
     clock = pygame.time.Clock()
 
+    def main_menu():
+        pass
 
     def draw_bg():
         fon = pygame.image.load('data/img.png')
@@ -21,6 +26,8 @@ if __name__ == '__main__':
 
     fighter_1 = Fighter(200, 420, 1, 'data/idle.png')
     fighter_2 = Fighter(700, 420, 2, 'data/idle.png')
+
+    button_start = Button(width/2-(252/2), 100, 252, 74, "", "data/play01.png", "data/play02.png")
 
     def healthbar(pos_x, pos_y, health):
         healthbar_rect = pygame.Rect((pos_x, pos_y, 400 * (health / 100), 30))
@@ -34,6 +41,7 @@ if __name__ == '__main__':
 
         clock.tick(FPS)
 
+
         draw_bg()
         healthbar(30, 20, fighter_2.health)
         healthbar(570, 20, fighter_1.health)
@@ -43,6 +51,8 @@ if __name__ == '__main__':
 
         fighter_1.animation(screen)
 
+        button_start.check_hover(pygame.mouse.get_pos())
+        button_start.draw(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
