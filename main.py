@@ -62,7 +62,7 @@ def main_menu():
 def new_game():
     running = True
     fighter_1 = Fighter(200, 200, 1, "data/idle.png", "RIGHT")
-    fighter_2 = Fighter(600, 200, 2, "data/idle_l.png", "RIGHT")
+    fighter_2 = Fighter(600, 200, 2, "data/idle_2_l.png", "RIGHT")
 
     round_end =  False
     score = [0, 0]
@@ -121,4 +121,3 @@ def new_game():
 
 if __name__ == '__main__':
     main_menu()
-
