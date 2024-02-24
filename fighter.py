@@ -187,13 +187,13 @@ class Fighter():
 
 
     def no_move(self):
-        if self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 1:
+        if self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 1 and self.alive == True:
             self.image = pygame.transform.scale(pygame.image.load("data/idle.png"), (200, 310))
-        elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 1:
+        elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 1 and self.alive == True:
             self.image = pygame.transform.scale(pygame.image.load("data/idle_l.png"), (200, 310))
-        elif self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 2:
+        elif self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 2 and self.alive == True:
             self.image = pygame.transform.scale(pygame.image.load("data/idle_2.png"), (200, 310))
-        elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 2:
+        elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 2 and self.alive == True:
             self.image = pygame.transform.scale(pygame.image.load("data/idle_2_l.png"), (200, 310))
 
     def anim_jump(self):

@@ -1,4 +1,5 @@
 import pygame
+import sqlite3 as sql
 from fighter import Fighter
 import sys
 from tools import Button
@@ -16,6 +17,15 @@ main_menu_fon = pygame.transform.scale(main_menu_fon, size)
 cursor = pygame.image.load("data/cursor.png")
 cursor = pygame.transform.scale(cursor, (32, 32))
 pygame.mouse.set_visible(False)
+
+con = sql.connect('data.db')
+cur = con.cursor()
+
+cur.execute('CREATE TABLE IF NOT EXISTS background(id INTEGER PRIMARY KEY, img BLOB)')
+
+con.commit()
+cur.close()
+con.close()
 
 
 def draw_bg():
