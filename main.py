@@ -17,6 +17,7 @@ cursor = pygame.image.load("data/cursor.png")
 cursor = pygame.transform.scale(cursor, (32, 32))
 pygame.mouse.set_visible(False)
 
+
 def draw_bg():
     fon = pygame.image.load('data/fon.jpg')
     fon = pygame.transform.scale(fon, (1000, 600))
@@ -61,14 +62,24 @@ def main_menu():
         pygame.display.update()
 def new_game():
     running = True
+
     fighter_1 = Fighter(200, 200, 1, "data/idle.png", "LEFT")
     fighter_2 = Fighter(600, 200, 2, "data/idle_2_l.png", "RIGHT")
 
+    game_start = False
     round_end = False
     score = [0, 0]
     round_end_time = 0
 
+    font2 = pygame.font.Font(None, 0)
+    text2 = font2.render(f'123', True, (0, 0, 0))
+
+    intro_count = 4
+    last_update = pygame.time.get_ticks()
+
     while running:
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -105,17 +116,30 @@ def new_game():
             font = pygame.font.Font(None, 0)
             text1 = font.render("123", True, (255, 0, 0))
 
-        fighter_1.move()
-        fighter_2.move()
+        if intro_count <= 0:
+            game_start = True
+            font = pygame.font.Font(None, 0)
+            text2 = font.render(f'{intro_count}', True, (0, 0, 0))
+        else:
+            if (pygame.time.get_ticks() - last_update) >= 1000:
+                intro_count -= 1
+                last_update = pygame.time.get_ticks()
+                font = pygame.font.Font(None, 64)
+                text2 = font.render(f'{intro_count}', True, (0, 0, 0))
+
+
         draw_bg()
-        fighter_1.render(screen)
-        fighter_2.render(screen)
-        fighter_1.update(fighter_2, screen)
-        fighter_2.update(fighter_1, screen)
+        if game_start == True:
+            fighter_1.move()
+            fighter_2.move()
+            fighter_1.render(screen)
+            fighter_2.render(screen)
+            fighter_1.update(fighter_2, screen)
+            fighter_2.update(fighter_1, screen)
         healthbar(20, 20, fighter_1.health)
         healthbar(580, 20, fighter_2.health)
         screen.blit(text1, (300, 200))
-
+        screen.blit(text2, (480, 100))
         pygame.display.update()
         clock.tick(FPS)
 
