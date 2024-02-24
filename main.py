@@ -23,15 +23,21 @@ cur = con.cursor()
 
 cur.execute('CREATE TABLE IF NOT EXISTS background(id INTEGER PRIMARY KEY, img BLOB)')
 
+#for i in range(1, 3):
+#    with open(f'data/bg_{i}.png', 'rb') as img:
+#        cur.execute('INSERT INTO background(img) VALUES(?)', [img.read()])
+
+bg_photo = cur.execute('SELECT img FROM background').fetchall()
+
+
 con.commit()
 cur.close()
 con.close()
 
-
 def draw_bg():
-    fon = pygame.image.load('data/fon.jpg')
-    fon = pygame.transform.scale(fon, (1000, 600))
-    screen.blit(fon, (0, 0))
+    global fon
+    fon_bg = pygame.transform.scale(fon, (1000, 600))
+    screen.blit(fon_bg, (0, 0))
 
 def healthbar(pos_x, pos_y, health):
     healthbar_rect = pygame.Rect((pos_x, pos_y, 400 * (health / 100), 30))
@@ -42,6 +48,7 @@ def healthbar(pos_x, pos_y, health):
 def main_menu():
     button_start = Button(width / 2 - (270 / 2), 250, 270, 74, "", "data/play01.png", "data/play02.png")
     exit_button = Button(width / 2 - (270 / 2), 350, 270, 74, "", "data/back01.png", "data/back02.png")
+    option_button = Button(width / 2 - (270 / 2), 450, 270, 74, "", "data/option01.png", "data/option02.png")
 
     running = True
     while running:
@@ -59,10 +66,13 @@ def main_menu():
             if event.type == pygame.USEREVENT and event.button == exit_button:
                 running = False
 
-            for btn in [button_start, exit_button]:
+            if event.type == pygame.USEREVENT and event.button == option_button:
+                option()
+
+            for btn in [button_start, exit_button, option_button]:
                 btn.handle_event(event)
 
-        for btn in [button_start, exit_button]:
+        for btn in [button_start, exit_button, option_button]:
             btn.check_hover(pygame.mouse.get_pos())
             btn.draw(screen)
 
@@ -70,6 +80,58 @@ def main_menu():
         screen.blit(cursor, (x, y))
 
         pygame.display.update()
+
+def option():
+    global fon
+    running = True
+    main_menu_fon = pygame.image.load("data/main_menu_fon.png")
+    main_menu_fon = pygame.transform.scale(main_menu_fon, size)
+    exit_button = Button(width / 2 - (270 / 2), 500, 270, 74, "", "data/back01.png", "data/back02.png")
+    choose_btn_1 = Button(100, 400, 270, 74, "", "data/yes01.png", "data/yes02.png")
+    choose_btn_2 = Button(650, 400, 270, 74, "", "data/yes01.png", "data/yes02.png")
+
+    while running:
+        screen.fill((0, 0, 0))
+        screen.blit(main_menu_fon, (0, 0))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                sys.exit()
+            if event.type == pygame.USEREVENT and event.button == exit_button:
+                running = False
+
+            if event.type == pygame.USEREVENT and event.button == choose_btn_1:
+                fon = pygame.image.load('data/bg_1.png')
+                running = False
+
+            if event.type == pygame.USEREVENT and event.button == choose_btn_2:
+                fon = pygame.image.load('data/bg_2.png')
+                running = False
+
+            for btn in [exit_button, choose_btn_1, choose_btn_2]:
+                btn.handle_event(event)
+
+        for btn in [exit_button, choose_btn_1, choose_btn_2]:
+            btn.check_hover(pygame.mouse.get_pos())
+            btn.draw(screen)
+
+        x, y = pygame.mouse.get_pos()
+        screen.blit(cursor, (x, y))
+
+        bg_1 = pygame.image.load('data/bg_1.png')
+        bg_1 = pygame.transform.scale(bg_1, (350, 250))
+        bg_1_rect = bg_1.get_rect(bottomright=(400, 350))
+        screen.blit(bg_1, bg_1_rect)
+
+        bg_2 = pygame.image.load('data/bg_2.png')
+        bg_2 = pygame.transform.scale(bg_2, (350, 250))
+        bg_2_rect = bg_2.get_rect(bottomright=(950, 350))
+        screen.blit(bg_2, bg_2_rect)
+
+        pygame.display.update()
+
+
 def new_game():
     running = True
 
