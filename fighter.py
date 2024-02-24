@@ -76,6 +76,7 @@ attack_anim_left_2 = [
     pygame.transform.scale(pygame.image.load("data/attakc_2_l (2).png"), (200, 310)),
     pygame.transform.scale(pygame.image.load("data/attakc_2_l (3).png"), (200, 310)),
 ]
+
 class Fighter():
     def __init__(self, x, y, player, image, direction):
         self.pos = vec(x, y)
@@ -84,6 +85,7 @@ class Fighter():
         self.direction = direction
         self.move_frame = 0
         self.attack_frame = 0
+        self.jump_frame = 0
         self.attacking = False
         self.health = 100
         self.player = player
@@ -125,6 +127,7 @@ class Fighter():
                     dy = 600 - 310 - self.pos.y
 
                 self.dx = dx
+                self.dy = dy
                 self.rect.x += dx
                 self.rect.y += dy
                 self.pos.x += dx
@@ -152,6 +155,7 @@ class Fighter():
                     dy = 600 - 310 - self.pos.y
 
                 self.dx = dx
+                self.dy = dy
                 self.pos.x += dx
                 self.pos.y += dy
                 self.rect.x += dx
@@ -181,48 +185,80 @@ class Fighter():
                     self.direction = "RIGHT"
                 self.move_frame += 1
 
+
+    def no_move(self):
+        if self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 1:
+            self.image = pygame.transform.scale(pygame.image.load("data/idle.png"), (200, 310))
+        elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 1:
+            self.image = pygame.transform.scale(pygame.image.load("data/idle_l.png"), (200, 310))
+        elif self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 2:
+            self.image = pygame.transform.scale(pygame.image.load("data/idle_2.png"), (200, 310))
+        elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 2:
+            self.image = pygame.transform.scale(pygame.image.load("data/idle_2_l.png"), (200, 310))
+
+    def anim_jump(self):
+
+        if self.jump == True:
+            if self.dy != 0 and self.direction == 'LEFT' and self.player == 2:
+                self.image = pygame.transform.scale(pygame.image.load("data/jump_2_r.png"), (200, 310))
+            elif self.dy != 0 and self.direction == 'RIGHT' and self.player == 2:
+                self.image = pygame.transform.scale(pygame.image.load("data/jump_2_l.png"), (200, 310))
+            elif self.dy != 0 and self.direction == 'RIGHT' and self.player == 1:
+                self.image = pygame.transform.scale(pygame.image.load("data/jump_1_l.png"), (200, 310))
+            elif self.dy != 0 and self.direction == 'LEFT' and self.player == 1:
+                self.image = pygame.transform.scale(pygame.image.load("data/jump_1_r.png"), (200, 310))
+
+
+
     def attack(self, target, surface):
-        if self.attacking == True:
-            if self.attack_frame > 4:
-                self.attack_frame = 0
-                self.attacking = False
+        if self.alive == True:
+            if self.attacking == True:
+                if self.attack_frame > 4:
+                    self.attack_frame = 0
+                    self.attacking = False
 
-            if self.player == 1:
-                if self.direction == "LEFT":
-                    self.image = attack_anim_right[self.attack_frame]
-                elif self.direction == 'RIGHT':
-                    self.image = attack_anim_left[self.attack_frame]
-                self.attack_frame += 1
-                if self.direction == 'RIGHT':
-                    attacking_rect = pygame.Rect(self.pos.x - 100, self.pos.y, 100, 310)
-                elif self.direction == 'LEFT':
-                    attacking_rect = pygame.Rect(self.pos.x + 200, self.pos.y, 100, 310)
-                pygame.draw.rect(surface, (255, 0, 0), attacking_rect)
-            elif self.player == 2:
-                if self.direction == "LEFT":
-                    self.image = attack_anim_right_2[self.attack_frame]
-                elif self.direction == 'RIGHT':
-                    self.image = attack_anim_left_2[self.attack_frame]
-                self.attack_frame += 1
-                if self.direction == 'RIGHT':
-                    attacking_rect = pygame.Rect(self.pos.x - 100, self.pos.y, 100, 310)
-                elif self.direction == 'LEFT':
-                    attacking_rect = pygame.Rect(self.pos.x + 200, self.pos.y, 100, 310)
-                pygame.draw.rect(surface, (255, 0, 0), attacking_rect)
+                if self.player == 1:
+                    if self.direction == "LEFT":
+                        self.image = attack_anim_right[self.attack_frame]
+                    elif self.direction == 'RIGHT':
+                        self.image = attack_anim_left[self.attack_frame]
+                    self.attack_frame += 1
+                    if self.direction == 'RIGHT':
+                        attacking_rect = pygame.Rect(self.pos.x - 100, self.pos.y, 100, 310)
+                    elif self.direction == 'LEFT':
+                        attacking_rect = pygame.Rect(self.pos.x + 200, self.pos.y, 100, 310)
+                    # pygame.draw.rect(surface, (255, 0, 0), attacking_rect)
+                elif self.player == 2:
+                    if self.direction == "LEFT":
+                        self.image = attack_anim_right_2[self.attack_frame]
+                    elif self.direction == 'RIGHT':
+                        self.image = attack_anim_left_2[self.attack_frame]
+                    self.attack_frame += 1
+                    if self.direction == 'RIGHT':
+                        attacking_rect = pygame.Rect(self.pos.x - 100, self.pos.y, 100, 310)
+                    elif self.direction == 'LEFT':
+                        attacking_rect = pygame.Rect(self.pos.x + 200, self.pos.y, 100, 310)
+                    # pygame.draw.rect(surface, (255, 0, 0), attacking_rect)
 
-            if attacking_rect.colliderect(target.rect):
-                target.health -= 1
-                if target.health < 0:
-                    target.alive = False
-                    image = pygame.image.load("data/Dead-ezgif.com-crop.png")
-                    target.image = pygame.transform.scale(image, (200, 310))
-        else:
-            pass
+                if attacking_rect.colliderect(target.rect):
+                    target.health -= 0.5
+                    if target.health < 0:
+                        target.alive = False
+                        if self.player == 2:
+                            image = pygame.image.load("data/Dead-ezgif.com-crop.png")
+                        if self.player == 1:
+                            image = pygame.image.load("data/Dead-ezgif.com-crop (2).png")
+
+                        target.image = pygame.transform.scale(image, (200, 310))
+            else:
+                pass
 
     def update(self, target, surface):
         self.attack(target, surface)
         self.walk_anim()
         self.move()
+        self.no_move()
+        self.anim_jump()
 
     def render(self, surface):
         # pygame.draw.rect(surface, (255, 0, 0), self.rect)
