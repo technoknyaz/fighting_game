@@ -1,5 +1,7 @@
 import pygame
 
+
+# Класс для создания кнопок для главного меню
 class Button:
     def __init__(self, x, y, width, height, text, image_path, hover_image_path=None):
         self.x = x
@@ -19,7 +21,6 @@ class Button:
         current_image = self.hover_image if self.is_hover else self.image
         surface.blit(current_image, self.rect.topleft)
 
-
         font = pygame.font.Font(None, 36)
         text_surface = font.render(self.text, True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=self.rect.center)
@@ -31,8 +32,3 @@ class Button:
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.is_hover:
             pygame.event.post(pygame.event.Event(pygame.USEREVENT, button=self))
-
-
-
-
-

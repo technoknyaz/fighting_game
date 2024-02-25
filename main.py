@@ -18,34 +18,44 @@ cursor = pygame.image.load("data/cursor.png")
 cursor = pygame.transform.scale(cursor, (32, 32))
 pygame.mouse.set_visible(False)
 
+# Подключение базы данных, загрузка картинок для заднего фона игры
 con = sql.connect('data.db')
 cur = con.cursor()
 
 cur.execute('CREATE TABLE IF NOT EXISTS background(id INTEGER PRIMARY KEY, img BLOB)')
 
-#for i in range(1, 3):
+# for i in range(1, 3):
 #    with open(f'data/bg_{i}.png', 'rb') as img:
 #        cur.execute('INSERT INTO background(img) VALUES(?)', [img.read()])
 
 bg_photo = cur.execute('SELECT img FROM background').fetchall()
 
-
 con.commit()
 cur.close()
 con.close()
 
+# Отрисовка заднего фона
 def draw_bg():
     global fon
-    fon_bg = pygame.transform.scale(fon, (1000, 600))
+    try:
+        fon_bg = pygame.transform.scale(fon, (1000, 600))
+    except:
+        fon = pygame.image.load('data/bg_1.png')
+        fon_bg = pygame.transform.scale(fon, (1000, 600))
     screen.blit(fon_bg, (0, 0))
 
+
+# Счетчик здоровья игроков
 def healthbar(pos_x, pos_y, health):
     healthbar_rect = pygame.Rect((pos_x, pos_y, 400 * (health / 100), 30))
     health_rect = pygame.Rect((pos_x, pos_y, 400, 30))
     pygame.draw.rect(screen, (255, 0, 0), health_rect)
     pygame.draw.rect(screen, (255, 255, 0), healthbar_rect)
 
+
+# Фнкция главного меню
 def main_menu():
+    # Создание кнопок
     button_start = Button(width / 2 - (270 / 2), 250, 270, 74, "", "data/play01.png", "data/play02.png")
     exit_button = Button(width / 2 - (270 / 2), 350, 270, 74, "", "data/back01.png", "data/back02.png")
     option_button = Button(width / 2 - (270 / 2), 450, 270, 74, "", "data/option01.png", "data/option02.png")
@@ -69,9 +79,11 @@ def main_menu():
             if event.type == pygame.USEREVENT and event.button == option_button:
                 option()
 
+            # Обработка событий нажатия
             for btn in [button_start, exit_button, option_button]:
                 btn.handle_event(event)
 
+        # Отрисовка кнопок на экране
         for btn in [button_start, exit_button, option_button]:
             btn.check_hover(pygame.mouse.get_pos())
             btn.draw(screen)
@@ -81,6 +93,8 @@ def main_menu():
 
         pygame.display.update()
 
+
+# Функция окна для выбора заднего фона игры
 def option():
     global fon
     running = True
@@ -119,6 +133,7 @@ def option():
         x, y = pygame.mouse.get_pos()
         screen.blit(cursor, (x, y))
 
+        # Отрисовка примеров заднего фона на экран
         bg_1 = pygame.image.load('data/bg_1.png')
         bg_1 = pygame.transform.scale(bg_1, (350, 250))
         bg_1_rect = bg_1.get_rect(bottomright=(400, 350))
@@ -132,12 +147,15 @@ def option():
         pygame.display.update()
 
 
+# Основаня функция игры
 def new_game():
     running = True
 
+    # Создание персонажей
     fighter_1 = Fighter(200, 200, 1, "data/idle.png", "LEFT")
     fighter_2 = Fighter(600, 200, 2, "data/idle_2_l.png", "RIGHT")
 
+    # Отслеживание победителя
     game_start = False
     round_end = False
     score = [0, 0]
@@ -146,11 +164,11 @@ def new_game():
     font2 = pygame.font.Font(None, 0)
     text2 = font2.render(f'123', True, (0, 0, 0))
 
+    # Начальный отсчет
     intro_count = 4
     last_update = pygame.time.get_ticks()
 
     while running:
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -164,30 +182,33 @@ def new_game():
                     fighter_2.attacking = True
                     fighter_2.attack(fighter_2, screen)
 
-        if round_end == False:
-            if fighter_1.alive == False:
+        # Проверка на конец игры, отслеживание победителя
+        if not round_end:
+            if not fighter_1.alive:
                 score[1] += 1
                 round_end = True
                 round_end_time = pygame.time.get_ticks()
                 print(score)
-            elif fighter_2.alive == False:
+            elif not fighter_2.alive:
                 score[0] += 1
                 round_end = True
                 round_end_time = pygame.time.get_ticks()
                 print(score)
         else:
-
+            # Перезапуск игры после победы одного из игроков
             if pygame.time.get_ticks() - round_end_time > 3000:
                 round_end = False
                 new_game()
 
+        # Вывод номера игрока, который победил в раунде
         if score[0] > 0 or score[1] > 0:
             font = pygame.font.Font(None, 64)
-            text1 = font.render(f'VICTORY Player: {score.index(max(score))+1}', True, (150, 0, 0))
+            text1 = font.render(f'VICTORY Player: {score.index(max(score)) + 1}', True, (150, 0, 0))
         else:
             font = pygame.font.Font(None, 0)
             text1 = font.render("123", True, (255, 0, 0))
 
+        # Обратный отсчет
         if intro_count <= 0:
             game_start = True
             font = pygame.font.Font(None, 0)
@@ -199,9 +220,9 @@ def new_game():
                 font = pygame.font.Font(None, 64)
                 text2 = font.render(f'{intro_count}', True, (0, 0, 0))
 
-
+        # Отрисовка заднего фона, обработка движений персонажа, отрисовка полосы здоровья
         draw_bg()
-        if game_start == True:
+        if game_start:
             fighter_1.move()
             fighter_2.move()
             fighter_1.render(screen)
@@ -214,6 +235,7 @@ def new_game():
         screen.blit(text2, (480, 100))
         pygame.display.update()
         clock.tick(FPS)
+
 
 if __name__ == '__main__':
     main_menu()

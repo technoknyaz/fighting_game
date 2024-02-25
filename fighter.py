@@ -2,6 +2,7 @@ import pygame
 
 vec = pygame.math.Vector2
 
+# Загрузка спрайтов для анимации персонажей
 walk_anim_right = [
     pygame.transform.scale(pygame.image.load("data/walk_right (1).png"), (200, 310)),
     pygame.transform.scale(pygame.image.load("data/walk_right (2).png"), (200, 310)),
@@ -77,8 +78,11 @@ attack_anim_left_2 = [
     pygame.transform.scale(pygame.image.load("data/attakc_2_l (3).png"), (200, 310)),
 ]
 
+
+# Класс для создания персонажей
 class Fighter():
     def __init__(self, x, y, player, image, direction):
+        # Объявление начальных параметров
         self.pos = vec(x, y)
         self.jump = False
         self.vel_y = 0
@@ -94,17 +98,17 @@ class Fighter():
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (200, 310))
 
-
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
+    # Функция обработки движения персонажа
     def move(self):
         SPEED = 10
         GRAVITY = 2
         dx = 0
         dy = 0
         key = pygame.key.get_pressed()
-        if self.alive == True:
+        if self.alive:
             if self.player == 1:
                 if key[pygame.K_a]:
                     dx = -SPEED
@@ -161,13 +165,12 @@ class Fighter():
                 self.rect.x += dx
                 self.rect.y += dy
 
-
+    # Анимация движения персонажа
     def walk_anim(self):
         if self.move_frame > 8:
             self.move_frame = 0
 
-
-        if self.jump == False:
+        if not self.jump:
             if self.player == 1:
                 if self.dx > 0:
                     self.image = walk_anim_right[self.move_frame]
@@ -185,7 +188,7 @@ class Fighter():
                     self.direction = "RIGHT"
                 self.move_frame += 1
 
-
+    # Если персонаж не двигаеться, то отрисовать картинку неподвидженого персонажа
     def no_move(self):
         if self.dx == 0 and self.direction == 'LEFT' and self.attacking == False and self.player == 1 and self.alive == True:
             self.image = pygame.transform.scale(pygame.image.load("data/idle.png"), (200, 310))
@@ -196,9 +199,10 @@ class Fighter():
         elif self.dx == 0 and self.direction == 'RIGHT' and self.attacking == False and self.player == 2 and self.alive == True:
             self.image = pygame.transform.scale(pygame.image.load("data/idle_2_l.png"), (200, 310))
 
+    # Анимация прыжка персонажа
     def anim_jump(self):
 
-        if self.jump == True:
+        if self.jump:
             if self.dy != 0 and self.direction == 'LEFT' and self.player == 2:
                 self.image = pygame.transform.scale(pygame.image.load("data/jump_2_r.png"), (200, 310))
             elif self.dy != 0 and self.direction == 'RIGHT' and self.player == 2:
@@ -208,9 +212,9 @@ class Fighter():
             elif self.dy != 0 and self.direction == 'LEFT' and self.player == 1:
                 self.image = pygame.transform.scale(pygame.image.load("data/jump_1_r.png"), (200, 310))
 
-
-
+    # Обработка атаки персонажа
     def attack(self, target, surface):
+        global attacking_rect
         if self.alive == True:
             if self.attacking == True:
                 if self.attack_frame > 4:
@@ -240,6 +244,7 @@ class Fighter():
                         attacking_rect = pygame.Rect(self.pos.x + 200, self.pos.y, 100, 310)
                     # pygame.draw.rect(surface, (255, 0, 0), attacking_rect)
 
+                # Проверка на попадание
                 if attacking_rect.colliderect(target.rect):
                     target.health -= 0.5
                     if target.health < 0:
@@ -253,6 +258,7 @@ class Fighter():
             else:
                 pass
 
+    # Обновление экрана
     def update(self, target, surface):
         self.attack(target, surface)
         self.walk_anim()
@@ -263,7 +269,3 @@ class Fighter():
     def render(self, surface):
         # pygame.draw.rect(surface, (255, 0, 0), self.rect)
         surface.blit(self.image, self.pos)
-
-
-
-
